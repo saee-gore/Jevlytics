@@ -1,0 +1,55 @@
+# LOCAL DEVELOPMENT ONLY. Not a production deployment.
+# Copy .env.example to .env, then set POSTGRES_PASSWORD, APP_DB_PASSWORD, ANALYTICS_RO_PASSWORD,
+# OWNER_DB_PASSWORD and JWT_SECRET. Leave TYPESAFE_API_KEY and ANTHROPIC_API_KEY empty until you
+# have credentials: the API then fails closed on analytics requests.
+name: merchant-payment-analytics
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: merchant_analytics
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d merchant_analytics"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMIN_DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/merchant_analytics
+      OWNER_DATABASE_URL: postgresql+psycopg://merchant_owner:${OWNER_DB_PASSWORD:?set OWNER_DB_PASSWORD in .env}@db:5432/merchant_analytics
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
+      ANALYTICS_RO_PASSWORD: ${ANALYTICS_RO_PASSWORD:?set ANALYTICS_RO_PASSWORD in .env}
+      OWNER_DB_PASSWORD: ${OWNER_DB_PASSWORD:?set OWNER_DB_PASSWORD in .env}
+    command: ["bash", "docker/migrate.sh"]
+    restart: "no"
+
+  api:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+psycopg://merchant_app:${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}@db:5432/merchant_analytics
+      ANALYTICS_DATABASE_URL: postgresql+psycopg://analytics_ro:${ANALYTICS_RO_PASSWORD:?set ANALYTICS_RO_PASSWORD in .env}@db:5432/merchant_analytics
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+    ports:
+      - "127.0.0.1:8000:8000"
+
+volumes:
+  pgdata:
