@@ -1,0 +1,5 @@
+user_id,merchant_id,role,display_name,is_active
+demo-analyst-001,merchant_001,ANALYST,Demo Analyst 001,true
+demo-viewer-001,merchant_001,VIEWER,Demo Viewer 001,true
+demo-analyst-002,merchant_002,ANALYST,Demo Analyst 002,true
+demo-analyst-003,merchant_003,ANALYST,Demo Analyst 003,true

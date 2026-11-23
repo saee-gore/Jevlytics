@@ -1,0 +1,16 @@
+{
+  "generator": "scripts/generate_dummy_data.py",
+  "seed": 20261120,
+  "start_date": "2026-07-24",
+  "end_date": "2026-11-20",
+  "synthetic": true,
+  "files": {
+    "data/chargebacks.csv": "a99b663d098bd72052d97e3a6bfbd18af64dddd38438f0a4175417ba42eba2bd",
+    "data/merchants.csv": "a6da12fda239c1022106c5d1697d7e4532c2d0f196ce71d2c2e713f4d6c5fc12",
+    "data/settlements.csv": "646e1f75d1ea0d360a8ee3403a64681623b322c38032feb77c524110489b66cb",
+    "data/transactions_merchant_001.csv": "4dc78a6155e695dbf691c47ea849584504f8ab1822414429933ea898ba1d6eb5",
+    "data/transactions_merchant_002.csv": "377d813636f15485e467cabc1707601df55d98fcd2e0f5fe9e351ae645b47db4",
+    "data/transactions_merchant_003.csv": "21593b4d40975ca0bc6801173a7d7dfbea2148c1962a07a4f059ef9adf81d35d",
+    "data/users.csv": "82d6ea68d75b5e79135d293d64772177631656b3688574d9c503ce14c8d9bcc5"
+  }
+}

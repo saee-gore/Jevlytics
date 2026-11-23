@@ -1,0 +1,4 @@
+merchant_id,legal_name,vertical,timezone,is_synthetic
+merchant_001,Northwind Outdoor Supply (fictional),retail_ecommerce,America/Los_Angeles,true
+merchant_002,Lumen Subscription Services (fictional),subscription_services,America/New_York,true
+merchant_003,Harbor Stays Hospitality (fictional),travel_hospitality,Europe/London,true
