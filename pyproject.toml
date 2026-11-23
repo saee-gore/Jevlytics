@@ -1,0 +1,69 @@
+[project]
+name = "merchant-payment-analytics"
+version = "0.1.0"
+description = "Merchant payment analytics assistant: deterministic analytics, policy-enforced orchestration, Jev routing, LLM explanation."
+requires-python = ">=3.11"
+dependencies = [
+    # Pinned for reproducibility. Update deliberately and re-run the full test suite.
+    "typesafe-sdk==0.7.5",          # Jev / TypeSafe System One SDK (import name: typesafe_sdk)
+    "fastapi==0.165.0",
+    "uvicorn[standard]==0.54.0",
+    "sqlalchemy==2.0.58",
+    "alembic==1.20.1",
+    "psycopg[binary]==3.3.9",
+    "pydantic==2.14.4",
+    "pydantic-settings==2.16.3",
+    "pyjwt==2.15.1",
+    "anthropic==2.12.0",
+    "httpx==0.28.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "pytest-cov==7.1.0",
+    "ruff==0.17.6",
+    "mypy==2.4.1",
+    "reportlab==5.1.0",            # only used to build the Jev testing guide PDF
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 110  # wraps code and comments; long string literals are kept whole
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101"]  # assert allowed in tests
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]
+"scripts/*" = ["S"]
+# queries.py interpolates only the constant BASE_WHERE fragment; all values are bound parameters.
+"app/analytics/queries.py" = ["S608"]
+# transactions.py follows the same rule: fixed SQL text, only the constant BASE_WHERE is interpolated.
+"app/analytics/transactions.py" = ["S608"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = false
+exclude = ["alembic/versions"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "integration: needs TEST_* database URLs (PostgreSQL)",
+]
+
+# reportlab (dev-only, guide builder) ships no type information.
+[[tool.mypy.overrides]]
+module = ["reportlab", "reportlab.*"]
+ignore_missing_imports = true
